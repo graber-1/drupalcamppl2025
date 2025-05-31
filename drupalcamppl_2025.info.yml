@@ -1,0 +1,7 @@
+name: DrupalCamp PL 2025
+type: module
+description: Demos of modal API for Drupal Camp Poland 2025.
+core_version_requirement: ^11
+dependencies:
+  - drupal:node
+  - lms:lms
