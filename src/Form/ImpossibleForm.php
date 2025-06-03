@@ -1,0 +1,104 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\drupalcamppl_2025\Form;
+
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Ajax\OpenModalDialogWithUrl;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Url;
+
+/**
+ * Hard Modal form example form builder.
+ */
+final class ImpossibleForm extends FormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId(): string {
+    return 'dc_2025_hard_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['input'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Some textfield'),
+    ];
+    $form['container'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'id' => 'container-1',
+      ],
+    ];
+
+    $rebuild_info = $form_state->getRebuildInfo();
+    if (\array_key_exists('modal_form_data', $rebuild_info)) {
+      $form['container']['input2'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Input 2'),
+        '#default_value' => $rebuild_info['modal_form_data']['input'],
+      ];
+    }
+
+    $form['actions'] = ['#type' => 'actions'];
+    $form['actions']['ajax'] = [
+      '#type' => 'button',
+      '#value' => $this->t('Open modal'),
+      '#ajax' => [
+        'url' => Url::fromRoute('lms.modal_subform_endpoint'),
+        'options' => [
+          'query' => [
+            'plugin_id' => 'simple_drupalcamp_subform',
+            'dialog_operation' => 'open',
+            'parent' => [
+              'plugin_id' => 'simple_drupalcamp_subform',
+              'parent_form' => TRUE,
+            ],
+          ],
+        ],
+        'callback' => [\get_class($this), 'ajaxUpdate'],
+      ],
+    ];
+    $form['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Normal submit'),
+    ];
+
+    return $form;
+  }
+
+  /**
+   * Ajax callback that opens the modal form.
+   */
+  public function ajaxCallback(array $form, FormStateInterface $form_state): AjaxResponse {
+    $response = new AjaxResponse();
+    $url = Url::fromRoute('drupalcamppl_2025.hard.form');
+    $response->addCommand(new OpenModalDialogWithUrl($url->toString(), ['width' => '75%']));
+    return $response;
+  }
+
+  /**
+   * Ajax callback that updates the current form.
+   */
+  public static function ajaxUpdate(array $form, FormStateInterface $form_state): array {
+    return [new ReplaceCommand('#container-1', $form['container'])];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $form_state->cleanValues();
+    $this->messenger()->addStatus(Markup::create('Values: <pre>' . \print_r($form_state->getValues(), TRUE) . '</pre>'));
+    $this->messenger()->addStatus(Markup::create('User input: <pre>' . \print_r($form_state->getUserInput(), TRUE) . '</pre>'));
+  }
+
+}

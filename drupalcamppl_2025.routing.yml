@@ -1,6 +1,6 @@
 # Easy
 drupalcamppl_2025.easy:
-  path: '/drupalcamppl2025/2025/easy'
+  path: '/drupalcamppl2025/easy'
   defaults:
     _controller: '\Drupal\drupalcamppl_2025\Controller\DCController::easy'
     _title: 'Easy'
@@ -9,17 +9,41 @@ drupalcamppl_2025.easy:
 
 # Medium
 drupalcamppl_2025.medium.page:
-  path: '/drupalcamppl2025/2025/medium'
+  path: '/drupalcamppl2025/medium'
   defaults:
     _controller: '\Drupal\drupalcamppl_2025\Controller\DCController::medium'
     _title: 'Medium'
   requirements:
     _permission: 'access content'
-
 drupalcamppl_2025.medium.form:
   path: '/drupalcamppl2025/2025/medium/form'
   defaults:
-    _form: '\Drupal\drupalcamppl_2025\Form\MediumForm'
+    _form: '\Drupal\drupalcamppl_2025\Form\MediumModalForm'
     _title: 'Medium Form'
+  requirements:
+    _permission: 'access content'
+
+# Hard
+drupalcamppl_2025.hard.page:
+  path: '/drupalcamppl2025/hard'
+  defaults:
+    _form: '\Drupal\drupalcamppl_2025\Form\HardForm'
+    _title: 'Hard'
+  requirements:
+    _permission: 'access content'
+drupalcamppl_2025.hard.form:
+  path: '/drupalcamppl2025/hard/form'
+  defaults:
+    _form: '\Drupal\drupalcamppl_2025\Form\HardModalForm'
+    _title: 'Hard Form'
+  requirements:
+    _permission: 'access content'
+
+# Impossible
+drupalcamppl_2025.impossible.page:
+  path: '/drupalcamppl2025/impossible'
+  defaults:
+    _form: '\Drupal\drupalcamppl_2025\Form\ImpossibleForm'
+    _title: 'Impossible'
   requirements:
     _permission: 'access content'
