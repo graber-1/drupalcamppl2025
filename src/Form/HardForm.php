@@ -36,6 +36,19 @@ final class HardForm extends FormBase {
       '#attributes' => [
         'id' => 'container-1',
       ],
+      'content' => [
+        '#markup' => 'Content of container 1',
+      ],
+    ];
+
+    $form['container_2'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'id' => 'container-2',
+      ],
+      'content' => [
+        '#markup' => 'Content of container 2',
+      ],
     ];
 
     $form['actions'] = ['#type' => 'actions'];

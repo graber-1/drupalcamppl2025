@@ -6,9 +6,11 @@ namespace Drupal\drupalcamppl_2025\Form;
 
 use Drupal\Core\Ajax\AjaxFormHelperTrait;
 use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\AppendCommand;
 use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\AppendCommand;
+use Drupal\Core\Ajax\RemoveCommand;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Html;
@@ -35,6 +37,8 @@ final class HardModalForm extends FormBase {
       '#type' => 'radios',
       '#required' => TRUE,
       '#options' => [
+        'replace' => $this->t('Replace some content'),
+        'remove' => $this->t('Remove some content'),
         'set_input' => $this->t('Set parent form input value'),
         'add_input' => $this->t('Add input to the parent form'),
       ],
@@ -71,7 +75,19 @@ final class HardModalForm extends FormBase {
 
     $command = $form_state->getValue('command');
 
-    if ($command === 'set_input') {
+    if ($command === 'replace') {
+      $response->addCommand(new ReplaceCommand('#container-1', [
+        '#type' => 'container',
+        '#attributes' => ['id' => 'container-1'],
+        'content' => [
+          '#markup' => $this->t('Replaced content of Container 1'),
+        ],
+      ]));
+    }
+    elseif ($command === 'remove') {
+      $response->addCommand(new RemoveCommand('#container-2'));
+    }
+    elseif ($command === 'set_input') {
       $response->addCommand(new InvokeCommand('[data-drupal-selector="edit-input"]', 'val', ['some value']));
     }
     elseif ($command === 'add_input') {

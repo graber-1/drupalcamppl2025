@@ -67,8 +67,11 @@ final class DCController extends ControllerBase {
       '#title' => $this->t('Open modal form.'),
       '#url' => Url::fromRoute('drupalcamppl_2025.medium.form'),
       '#ajax' => [
-        'dialogType' => 'modal',
-        'dialog' => ['height' => 'auto', 'width' => '80%'],
+        'dialogType' => 'dialog',
+        'dialog' => [
+          'height' => 'auto',
+          'width' => '300',
+        ],
       ],
     ];
 

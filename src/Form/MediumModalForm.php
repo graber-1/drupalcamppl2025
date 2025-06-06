@@ -4,21 +4,13 @@ declare(strict_types=1);
 
 namespace Drupal\drupalcamppl_2025\Form;
 
-use Drupal\Core\Ajax\AjaxFormHelperTrait;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\RemoveCommand;
-use Drupal\Core\Ajax\ReplaceCommand;
-use Drupal\Core\Ajax\AppendCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Html;
 
 /**
  * Medium difficulty form.
  */
 final class MediumModalForm extends FormBase {
-  use AjaxFormHelperTrait;
 
   /**
    * {@inheritdoc}
@@ -31,17 +23,7 @@ final class MediumModalForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['command'] = [
-      '#title' => $this->t('Command'),
-      '#type' => 'radios',
-      '#required' => TRUE,
-      '#options' => [
-        'replace' => $this->t('Replace some content'),
-        'remove' => $this->t('Remove some content'),
-        'append' => $this->t('Append some content'),
-      ],
-    ];
-
+    $form['text'] = ['#markup' => 'Press the button below.'];
     $form['actions'] = ['#type' => 'actions'];
 
     $form['actions']['submit'] = [
@@ -49,11 +31,15 @@ final class MediumModalForm extends FormBase {
       '#value' => $this->t('Submit'),
       '#ajax' => [
         'callback' => '::ajaxSubmit',
+        'wrapper' => 'container-1',
+        'progress' => [
+          'type' => 'bar',
+          'message' => $this->t('Ajaxing'),
+        ],
+        'effect' => 'fade',
+        'speed' => 'slow',
       ],
     ];
-
-    // Core issue: https://www.drupal.org/node/2897377.
-    $form['#id'] = Html::getId($form_state->getBuildInfo()['form_id']);
 
     return $form;
   }
@@ -68,36 +54,19 @@ final class MediumModalForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  protected function successfulAjaxSubmit(array $form, FormStateInterface $form_state): AjaxResponse {
-    $response = new AjaxResponse();
-
-    $command = $form_state->getValue('command');
-
-    if ($command === 'replace') {
-      $response->addCommand(new ReplaceCommand('#container-1', [
-        '#type' => 'container',
-        '#attributes' => ['id' => 'container-1'],
-        'content' => [
-          '#markup' => $this->t('Replaced content of Container 1'),
-        ],
-      ]));
-    }
-    elseif ($command === 'remove') {
-      $response->addCommand(new RemoveCommand('#container-2'));
-    }
-    elseif ($command === 'append') {
-      $response->addCommand(new AppendCommand('#container-1', [
-        '#type' => 'container',
-        '#attributes' => ['id' => 'container-1-1'],
-        'content' => [
-          '#markup' => $this->t('Content appended to container 1'),
-        ],
-      ]));
-    }
-
-    $response->addCommand(new CloseModalDialogCommand());
-
-    return $response;
+  public function ajaxSubmit(array $form, FormStateInterface $form_state): array {
+    $end_date = new \DateTime('2025-06-07 12:45:00');
+    $diff = $end_date->diff(new \DateTime('now'));
+    $minutes = $diff->i;
+    return [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'container-1-1'],
+      'content' => [
+        '#markup' => $this->t('New container 1 content. You still have @time minutes until the end of the presentastion.', [
+          '@time' => $minutes,
+        ]),
+      ],
+    ];
   }
 
 }
